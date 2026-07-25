@@ -1,0 +1,39 @@
+# Secrets
+.env
+
+# Data (large, not versioned — mount as volumes or download separately)
+data/raw/
+data/processed/
+data/chroma_db/
+
+# Evaluation result files (large JSON, local-only — see src/evaluation/results/ locally)
+src/evaluation/results/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+.venv/
+.venv_new/
+env/
