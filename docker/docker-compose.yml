@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: colophon-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Generation backend: always groq in Docker
+      - LLM_BACKEND=groq
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-openai/gpt-oss-120b}
+      # Retrieval config
+      - RETRIEVAL_TOP_K=${RETRIEVAL_TOP_K:-20}
+      - RERANK_CANDIDATE_POOL=${RERANK_CANDIDATE_POOL:-10}
+      - RERANK_FINAL_K=${RERANK_FINAL_K:-5}
+      - CONFIDENCE_THRESHOLD=${CONFIDENCE_THRESHOLD:-0.35}
+      # Use CPU reranker in Docker (no MPS/CUDA on free hosting)
+      - FORCE_CPU_RERANKER=1
+      # Embeddings
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
+      # Storage
+      - CHROMA_PERSIST_DIR=/app/data/chroma_db
+    volumes:
+      - ../data:/app/data
+      # Mount host HF model cache so container reuses already-downloaded models
+      # (avoids re-downloading 500MB+ on every docker-compose up)
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: colophon-frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - API_HOST=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
