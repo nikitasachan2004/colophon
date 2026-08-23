@@ -1,0 +1,202 @@
+[
+  {
+    "id": "eval-001",
+    "question": "What parameter is used to force Claude to use a specific tool in the Messages API?",
+    "expected_source_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools",
+    "category": "tools_and_agents",
+    "ground_truth": "Use the tool_choice parameter with type='tool' and specify the tool's name (e.g., tool_choice={'type': 'tool', 'name': 'get_weather'}).",
+    "notes": "Tests exact parameter lookup for tool forcing"
+  },
+  {
+    "id": "eval-002",
+    "question": "How do you enable extended thinking in Claude and set a token budget?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking",
+    "category": "extended_thinking",
+    "ground_truth": "Pass the thinking parameter with type='enabled' and budget_tokens set to the desired number of thinking tokens (e.g., thinking={'type': 'enabled', 'budget_tokens': 2048}).",
+    "notes": "Tests parameter structure for extended thinking"
+  },
+  {
+    "id": "eval-003",
+    "question": "What header is required to pass your API key in direct HTTP requests to the Claude API?",
+    "expected_source_url": "https://platform.claude.com/docs/en/get-api-key",
+    "category": "management",
+    "ground_truth": "The x-api-key header is used to pass the API key in direct HTTP requests.",
+    "notes": "Tests authentication header lookup"
+  },
+  {
+    "id": "eval-004",
+    "question": "What does the stop_reason 'tool_use' indicate in a Messages API response?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+    "category": "messages_api",
+    "ground_truth": "stop_reason='tool_use' indicates that Claude stopped generating text because it wants to call one or more tools, and returned tool_use content blocks.",
+    "notes": "Tests understanding of API stop reasons"
+  },
+  {
+    "id": "eval-005",
+    "question": "How do you mark content blocks for prompt caching in the Claude API?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+    "category": "messages_api",
+    "ground_truth": "Add a cache_control parameter with type='ephemeral' (e.g., cache_control={'type': 'ephemeral'}) to message, tool, or system content blocks.",
+    "notes": "Tests prompt caching syntax and breakpoint tagging"
+  },
+  {
+    "id": "eval-006",
+    "question": "What is the maximum output token limit for Claude 3.7 Sonnet?",
+    "expected_source_url": "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+    "category": "models_and_pricing",
+    "ground_truth": "Claude 3.7 Sonnet supports up to 64,000 output tokens (or 128k with extended output beta).",
+    "notes": "Tests model capability lookups"
+  },
+  {
+    "id": "eval-007",
+    "question": "How can I book a flight on Delta Airlines using Anthropic's booking portal?",
+    "expected_source_url": "",
+    "category": "out_of_domain",
+    "ground_truth": "I don't have enough information in the documentation to answer that confidently.",
+    "notes": "Out of domain question to verify FR-10 refusal guardrail"
+  },
+  {
+    "id": "eval-008",
+    "question": "What is the difference between client-side tools and server-side tools in Claude?",
+    "expected_source_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+    "category": "tools_and_agents",
+    "ground_truth": "Client-side tools execute in the developer's application/environment, requiring the app to run the function and return tool_result blocks. Server-side tools (like web search, code execution) run on Anthropic's managed infrastructure.",
+    "notes": "Tests architectural understanding of tool execution models"
+  },
+  {
+    "id": "eval-009",
+    "question": "How do you stream responses from the Messages API in Python?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/streaming",
+    "category": "messages_api",
+    "ground_truth": "Use client.messages.stream(...) as a context manager or pass stream=True to iterate over server-sent event deltas.",
+    "notes": "Tests streaming implementation in SDK"
+  },
+  {
+    "id": "eval-010",
+    "question": "What HTTP status code represents a Rate Limit Error in the Anthropic API?",
+    "expected_source_url": "https://platform.claude.com/docs/en/api/errors",
+    "category": "management",
+    "ground_truth": "HTTP status code 429 indicates a rate_limit_error.",
+    "notes": "Tests error code knowledge"
+  },
+  {
+    "id": "eval-011",
+    "question": "What are the recommended strategies for structuring system prompts with XML tags?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "category": "prompt_engineering",
+    "ground_truth": "Use semantic XML tags (e.g. <instructions>, <context>, <examples>) to clearly demarcate different parts of the prompt, preventing confusion between instructions and user input.",
+    "notes": "Tests prompt engineering best practices"
+  },
+  {
+    "id": "eval-012",
+    "question": "How do I make a reservation for a table at an Italian restaurant with Claude Reservations?",
+    "expected_source_url": "",
+    "category": "out_of_domain",
+    "ground_truth": "I don't have enough information in the documentation to answer that confidently.",
+    "notes": "Out of domain question to verify FR-10 refusal guardrail"
+  },
+  {
+    "id": "eval-013",
+    "question": "How do you submit batch requests to the Message Batches API?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+    "category": "messages_api",
+    "ground_truth": "Use client.messages.batches.create with a list of requests, each containing a custom_id and params dictionary with model, max_tokens, and messages.",
+    "notes": "Tests batch API endpoint and syntax"
+  },
+  {
+    "id": "eval-014",
+    "question": "What is the Model Context Protocol (MCP) and what problem does it solve?",
+    "expected_source_url": "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+    "category": "mcp",
+    "ground_truth": "MCP is an open standard that provides a universal protocol for AI applications to connect to external data sources, enterprise tools, and local/remote developer environments.",
+    "notes": "Tests conceptual understanding of MCP"
+  },
+  {
+    "id": "eval-015",
+    "question": "How do you pass images to Claude using the Messages API?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/vision",
+    "category": "multimodal",
+    "ground_truth": "Include an image content block in the user message with type='image', source={'type': 'base64', 'media_type': 'image/jpeg', 'data': '<base64_string>'}.",
+    "notes": "Tests vision and multimodal payload structure"
+  },
+  {
+    "id": "eval-016",
+    "question": "How do I use Twilio's REST API to send an SMS message in Python?",
+    "expected_source_url": "",
+    "category": "out_of_domain",
+    "ground_truth": "I don't have enough information in the documentation to answer that confidently.",
+    "notes": "Out of domain question (third-party SMS service) to verify FR-10 refusal guardrail"
+  },
+  {
+    "id": "eval-017",
+    "question": "What is tool_choice: {'type': 'any'} used for in tool calling?",
+    "expected_source_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools",
+    "category": "tools_and_agents",
+    "ground_truth": "tool_choice: {'type': 'any'} forces Claude to call at least one of the provided tools, but allows Claude to choose which tool is most appropriate.",
+    "notes": "Tests tool_choice type='any' vs type='auto' vs type='tool'"
+  },
+  {
+    "id": "eval-018",
+    "question": "What is the anthropic-version header and what is the current recommended API version value?",
+    "expected_source_url": "https://platform.claude.com/docs/en/manage-claude/authentication",
+    "category": "management",
+    "ground_truth": "The anthropic-version header specifies the API version, with '2023-06-01' being the standard version.",
+    "notes": "Tests API version header requirements"
+  },
+  {
+    "id": "eval-019",
+    "question": "What is the secret recipe for baking artisanal sourdough bread on Claude ovens?",
+    "expected_source_url": "",
+    "category": "out_of_domain",
+    "ground_truth": "I don't have enough information in the documentation to answer that confidently.",
+    "notes": "Out of domain question to verify FR-10 refusal guardrail"
+  },
+  {
+    "id": "eval-020",
+    "question": "How do you handle parallel tool calls returned by Claude in the Messages API?",
+    "expected_source_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use",
+    "category": "tools_and_agents",
+    "ground_truth": "Iterate through each tool_use content block in the response, execute the operations (concurrently or sequentially), and return a corresponding tool_result block for each tool_use_id in the next user message.",
+    "notes": "Tests handling of multiple simultaneous tool executions"
+  },
+  {
+    "id": "eval-021",
+    "question": "How can you prefill Claude's response and why is it useful?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "category": "prompt_engineering",
+    "ground_truth": "Include an assistant message at the end of the messages array with the desired starting text (e.g. '{' for JSON output); Claude will continue generating from that point.",
+    "notes": "Tests response prefilling technique for formatting control"
+  },
+  {
+    "id": "eval-022",
+    "question": "How do you configure a nuclear fusion reactor with the Anthropic Energy SDK?",
+    "expected_source_url": "",
+    "category": "out_of_domain",
+    "ground_truth": "I don't have enough information in the documentation to answer that confidently.",
+    "notes": "Out of domain question to verify FR-10 refusal guardrail"
+  },
+  {
+    "id": "eval-023",
+    "question": "What is strict tool use and how do you enable it in Claude tool definitions?",
+    "expected_source_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use",
+    "category": "tools_and_agents",
+    "ground_truth": "Strict tool use enforces that the model's generated tool arguments strictly conform to the JSON schema without deviations; enabled by setting strict: true in the tool definition.",
+    "notes": "Tests strict tool schema validation feature"
+  },
+  {
+    "id": "eval-024",
+    "question": "How does prompt caching affect API pricing and latency?",
+    "expected_source_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+    "category": "messages_api",
+    "ground_truth": "Cached prompt reads provide up to a 90% discount on input token costs and significantly lower latency by reusing cached KV states across requests.",
+    "notes": "Tests prompt caching economic and performance benefits"
+  },
+  {
+    "id": "eval-025",
+    "question": "What is the web search server tool in Claude and how is it invoked?",
+    "expected_source_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+    "category": "tools_and_agents",
+    "ground_truth": "The web search tool is an Anthropic-hosted server tool provided in the tools list with type='web_search_20250101' that allows Claude to execute live web searches on Anthropic infrastructure.",
+    "notes": "Tests server-side web search tool invocation"
+  }
+]
