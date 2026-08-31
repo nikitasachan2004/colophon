@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* Bugatti Design System - Pure Black Canvas, White Type, No Accent */
+
+@theme inline {
+  --color-canvas: #09090b;
+  --color-surface-soft: #18181b;
+  --color-surface-card: rgba(24, 24, 27, 0.4);
+  --color-surface-elevated: #27272a;
+  --color-hairline: rgba(255, 255, 255, 0.1);
+  --color-hairline-strong: rgba(255, 255, 255, 0.2);
+  
+  --color-ink: #ffffff;
+  --color-body: #a1a1aa;
+  --color-body-strong: #d4d4d8;
+  --color-muted: #71717a;
+  --color-muted-soft: #52525b;
+  
+  --color-link: #3b82f6;
+  
+  --font-display: var(--font-sans), system-ui, sans-serif;
+  --font-text: var(--font-sans), system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", monospace;
+  
+  --radius-none: 0px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+}
+
+:root {
+  --background: #09090b;
+  --foreground: #ffffff;
+  --card: rgba(24, 24, 27, 0.4);
+  --card-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #09090b;
+  --border: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  * {
+     @apply border-hairline;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply bg-canvas text-ink font-text selection:bg-white/20 selection:text-white;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight font-semibold text-ink;
+  }
+  
+  h1 { @apply text-5xl sm:text-7xl leading-tight; }
+  h2 { @apply text-4xl sm:text-5xl leading-tight; }
+  h3 { @apply text-2xl sm:text-3xl leading-snug; }
+  
+  p, li {
+    @apply font-text text-base leading-relaxed tracking-normal text-body;
+  }
+  
+  small, .caption, .meta {
+    @apply font-text text-sm text-muted;
+  }
+  
+  a {
+    @apply text-ink transition-opacity hover:opacity-80;
+  }
+  
+  ul, ol {
+    @apply list-none m-0 p-0;
+  }
+}
+
+@layer components {
+  /* Premium Glow Button */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center h-12 px-8 rounded-full bg-white text-black font-medium text-sm transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-95 z-10;
+  }
+  
+  /* Glassmorphic Card */
+  .glass-card {
+    @apply bg-surface-card backdrop-blur-xl border border-hairline rounded-2xl transition-all duration-300 hover:border-hairline-strong hover:bg-white/5;
+  }
+  
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/50;
+  }
+  
+  /* Hero Background Gradient */
+  .hero-glow {
+    @apply absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))];
+  }
+}
+
+/* Image corridor keyframes */
+@keyframes scroll-up {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+@keyframes scroll-down {
+  from { transform: translateY(-50%); }
+  to   { transform: translateY(0); }
+}
+
+.animate-scroll-up {
+  animation: var(--animate-scroll-up);
+}
+
+.animate-scroll-down {
+  animation: var(--animate-scroll-down);
+}
