@@ -24,8 +24,8 @@ chromadb>=0.5.0
 # Sparse retrieval
 rank-bm25>=0.2.2
 
-# Reranker
-FlagEmbedding>=1.2.0
+# Reranker (Disabled for 512MB Free Tier)
+# FlagEmbedding>=1.2.0
 
 # Generation
 groq>=0.9.0
