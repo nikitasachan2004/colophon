@@ -28,6 +28,16 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Starting RAG Knowledge Assistant API...")
 
+    # Limit PyTorch threads to save memory on 512MB instances
+    try:
+        import torch
+        torch.set_num_threads(1)
+        import os
+        os.environ["OMP_NUM_THREADS"] = "1"
+        os.environ["MKL_NUM_THREADS"] = "1"
+    except Exception:
+        pass
+
     # Pre-load embedding model
     try:
         from src.ingestion.embedder import get_embedding_model, get_collection
