@@ -1,0 +1,14 @@
+# Evaluation dependencies — not needed at runtime, not installed in Docker images
+# Usage: pip install -r requirements-eval.txt
+
+-r requirements.txt
+
+# RAGAS evaluation framework
+ragas>=0.3.9,<0.4.0
+datasets>=2.20.0
+
+# LangChain (RAGAS judge wrappers only — not used in production pipeline)
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-groq>=0.2.0
+langchain-ollama>=1.0.0

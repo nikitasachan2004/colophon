@@ -1,0 +1,42 @@
+# Never bake secrets into the image
+.env
+
+# Virtual environments — large, not needed (pip install handles deps)
+.venv/
+.venv_new/
+venv/
+env/
+
+# Data — mounted as volumes at runtime, not baked into image
+data/chroma_db/
+data/raw/
+data/processed/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Testing artefacts
+.coverage
+htmlcov/
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Evaluation results (large JSON files, not needed in git — use result files locally)
+src/evaluation/results/
+
+# SRS docs (not needed at runtime)
+SRS/
