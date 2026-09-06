@@ -22,8 +22,19 @@ import tiktoken
 
 from src.config import CHUNK_OVERLAP_PCT, CHUNK_SIZE_TOKENS
 
-# Use cl100k_base (GPT-4 / general-purpose tokenizer) for consistent token counting
-_TOKENIZER = tiktoken.get_encoding("cl100k_base")
+_TOKENIZER = None
+
+
+def _get_tokenizer():
+    global _TOKENIZER
+    if _TOKENIZER is None:
+        try:
+            import tiktoken
+
+            _TOKENIZER = tiktoken.get_encoding("cl100k_base")
+        except Exception:
+            _TOKENIZER = "fallback"
+    return _TOKENIZER
 
 
 @dataclass
@@ -43,8 +54,14 @@ class Chunk:
 
 
 def count_tokens(text: str) -> int:
-    """Count tokens using the cl100k_base tokenizer."""
-    return len(_TOKENIZER.encode(text))
+    """Count tokens using the cl100k_base tokenizer (falling back to word count if offline)."""
+    tok = _get_tokenizer()
+    if tok == "fallback" or tok is None:
+        return len(text.split())
+    try:
+        return len(tok.encode(text))
+    except Exception:
+        return len(text.split())
 
 
 def _split_on_headings(markdown: str) -> list[tuple[str, str]]:

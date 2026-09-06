@@ -23,8 +23,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download ONNX embedder and ONNX reranker models (INT8 quantized) during image build so startup is 100% offline with zero download memory spike
-RUN HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "from huggingface_hub import hf_hub_download; from tokenizers import Tokenizer; \
+# Pre-download ONNX embedder, ONNX reranker, and tiktoken models during image build so startup is 100% offline with zero download memory spike
+RUN HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "from huggingface_hub import hf_hub_download; from tokenizers import Tokenizer; import tiktoken; \
+    tiktoken.get_encoding('cl100k_base'); \
     import chromadb.utils.embedding_functions as ef; ef.ONNXMiniLM_L6_V2()(['test']); \
     hf_hub_download(repo_id='xenova/all-MiniLM-L6-v2', filename='onnx/model_quantized.onnx'); \
     hf_hub_download(repo_id='xenova/ms-marco-MiniLM-L-6-v2', filename='onnx/model_quantized.onnx'); \
