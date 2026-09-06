@@ -23,14 +23,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download ONNX embedder, ONNX reranker, and tiktoken models during image build so startup is 100% offline with zero download memory spike
-RUN HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "from huggingface_hub import hf_hub_download; from tokenizers import Tokenizer; import tiktoken; \
-    tiktoken.get_encoding('cl100k_base'); \
-    import chromadb.utils.embedding_functions as ef; ef.ONNXMiniLM_L6_V2()(['test']); \
-    hf_hub_download(repo_id='xenova/all-MiniLM-L6-v2', filename='onnx/model_quantized.onnx'); \
-    hf_hub_download(repo_id='xenova/ms-marco-MiniLM-L-6-v2', filename='onnx/model_quantized.onnx'); \
-    hf_hub_download(repo_id='xenova/ms-marco-MiniLM-L-6-v2', filename='tokenizer.json'); \
-    Tokenizer.from_pretrained('cross-encoder/ms-marco-MiniLM-L-6-v2')"
+# Pre-download models during image build — each in its own layer so Docker can cache
+# independently. A network timeout on one step only re-runs that step, not all of them.
+
+# 1. tiktoken cl100k_base encoding (small, fast)
+RUN HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "import tiktoken; tiktoken.get_encoding('cl100k_base')"
+
+# 2. ChromaDB's own ONNX MiniLM download (downloads from chromadb CDN, not HF hub)
+RUN HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "import chromadb.utils.embedding_functions as ef; ef.ONNXMiniLM_L6_V2()(['test'])"
+
+# 3. xenova/all-MiniLM-L6-v2 INT8 quantized ONNX model (used by ONNXEmbeddingWrapper)
+RUN HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "from huggingface_hub import hf_hub_download; hf_hub_download(repo_id='xenova/all-MiniLM-L6-v2', filename='onnx/model_quantized.onnx')"
+
+# 4. xenova/ms-marco-MiniLM-L-6-v2 INT8 quantized ONNX reranker + tokenizer
+RUN HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "from huggingface_hub import hf_hub_download; from tokenizers import Tokenizer; hf_hub_download(repo_id='xenova/ms-marco-MiniLM-L-6-v2', filename='onnx/model_quantized.onnx'); tok = hf_hub_download(repo_id='xenova/ms-marco-MiniLM-L-6-v2', filename='tokenizer.json'); Tokenizer.from_file(tok)"
 
 COPY . .
 
