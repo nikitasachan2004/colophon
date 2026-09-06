@@ -68,6 +68,10 @@ RETRIEVAL_TOP_K: int = int(os.getenv("RETRIEVAL_TOP_K", "20"))
 RERANK_CANDIDATE_POOL: int = int(os.getenv("RERANK_CANDIDATE_POOL", "10"))
 RERANK_FINAL_K: int = int(os.getenv("RERANK_FINAL_K", "5"))
 CONFIDENCE_THRESHOLD: float = float(os.getenv("CONFIDENCE_THRESHOLD", "0.35"))
+RERANKER_MODEL: str = os.getenv(
+    "RERANKER_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2"
+)
+
 
 # ── API ────────────────────────────────────────────────────────────────
 API_HOST: str = os.getenv("API_HOST", "0.0.0.0")

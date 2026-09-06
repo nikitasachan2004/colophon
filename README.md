@@ -21,7 +21,7 @@ Ever wished you could just *talk* to documentation? Now you can! Grounded strict
 - **🔪 Smart Structure-Aware Chunking:** It doesn't just slice text randomly. It splits along Markdown hierarchies (`##`/`###`) while keeping your precious code blocks completely intact!
 - **🕵️‍♂️ Hybrid Retrieval (The Best of Both Worlds):** Merges dense semantic vector search (`all-MiniLM-L6-v2`) with sparse exact-match BM25 search. Why? Because pure semantic search often misses crucial API identifiers like `tool_choice` or `cache_control`. We catch them all!
 - **🔀 Reciprocal Rank Fusion (RRF):** Flawless score-agnostic rank normalization with a $k=60$ smoothing constant.
-- **🎯 Cross-Encoder Reranking:** Takes the top candidates and ruthlessly re-scores them using `BAAI/bge-reranker-v2-m3` before the LLM even sees them.
+- **🎯 Cross-Encoder Reranking:** Takes the top candidates and re-scores them using `cross-encoder/ms-marco-MiniLM-L-6-v2` (22M parameters) in production for lightweight 512MB RAM hosting (swappable via `RERANKER_MODEL` to `BAAI/bge-reranker-v2-m3` for local dev).
 - **🛡️ Zero-Hallucination Guardrails:** If it doesn't know, it won't guess. Strict confidence thresholding ensures explicit refusals for out-of-domain queries.
 - **🔄 Dev/Prod Dual Backend:** Seamlessly switch between local **Ollama** (`llama3.1:8b`) for free local dev and cloud **Groq** (`openai/gpt-oss-120b`) for blistering production speed with a simple `.env` flag!
 
@@ -48,8 +48,9 @@ flowchart TD
         F --> I
         H --> J[Reciprocal Rank\nFusion RRF k=60]
         I --> J
-        J --> K[Cross-Encoder\nReranker\nBGE-reranker-v2\ntop-10 → top-5]
+        J --> K[Cross-Encoder\nReranker\nms-marco-MiniLM-L-6-v2\ntop-10 → top-5]
         K --> L{Score ≥\nthreshold?}
+
         L -- No --> M["🚫 Refusal\n'I don't have enough\ninformation...'"]
         L -- Yes --> N[Prompt Assembly\ncitations + constraint]
         N --> O{LLM_BACKEND}
@@ -217,9 +218,11 @@ Phase 4 ablation study — 25 held-out questions. All stages verified at **0 gen
 
 ## ⚠️ Known Limitations
 
-- **Latency:** Free CPU hosting means p95 ≈ 11s (reranker is the bottleneck). Acceptable for a demo, upgrade for prod!
+- **Production Reranker Model:** Production deployment (Render free tier, 512MB RAM) uses `cross-encoder/ms-marco-MiniLM-L-6-v2` (22M params) as the reranker instead of `BAAI/bge-reranker-v2-m3` (560M params) used during Phase 4's RAGAS evaluation, due to a hard memory ceiling on free-tier hosting. The RAGAS quality scores reported (Faithfulness=0.706 etc.) reflect the larger BGE reranker and have not been re-validated against the lightweight production reranker. A quick Recall@5 (0.9000) and OOD Refusal Accuracy (0.8000) sanity check confirmed the lightweight reranker is not badly broken, but a full RAGAS comparison between the two rerankers was not performed.
+- **Latency:** Free CPU hosting means p95 ≈ 11s (reranker on CPU is the bottleneck). Acceptable for a demo, upgrade for prod!
 - **Corpus Scope:** Limited to `platform.claude.com/docs`. It won't answer questions about other Anthropic products.
 - **Groq Free Tier:** 200k tokens/day. Perfect for demo scale!
+
 
 ---
 

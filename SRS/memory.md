@@ -39,8 +39,10 @@
 | 2026-08-31 | RRF confidence-threshold bug fixed | `_retrieve_hybrid_no_rerank` was applying CONFIDENCE_THRESHOLD=0.35 to RRF scores (~0.016 max) — zeroing out all hybrid results. Fixed to use dense-score as the context-found signal. | `src/evaluation/run_eval.py` |
 | 2026-09-02–04 | **Phase 4 clean ablation redo** | All four stages re-run with connection-error retry, Ollama judge pinned. Three rounds of connection errors and TPD exhaustion cleared before clean runs produced. | See debugging narrative below |
 | 2026-09-04 | **Final production config locked: `RERANK_CANDIDATE_POOL=10`, CPU reranker for deployment** | `RERANK_CANDIDATE_POOL=10` already in `.env` default. CPU reranker (`FORCE_CPU_RERANKER=1`) is required for HF Spaces free-tier deployment (no MPS/CUDA). Live endpoint benchmark confirms p50=7,618ms, p95=11,013ms — this is the honest latency for deployed config. NFR-1 miss documented as a free-hardware constraint. | `latency_optionB_benchmark.log` |
+| 2026-09-06 | **Production Reranker Swapped to `cross-encoder/ms-marco-MiniLM-L-6-v2` (Render 512MB RAM Fix)** | Production deployment (Render free tier, 512MB RAM) uses `cross-encoder/ms-marco-MiniLM-L-6-v2` (22M params) as the reranker instead of `BAAI/bge-reranker-v2-m3` (560M params) used during Phase 4's RAGAS evaluation, due to a hard memory ceiling on free-tier hosting. The RAGAS quality scores reported (Faithfulness=0.706 etc.) reflect the larger BGE reranker and have not been re-validated against the lightweight production reranker. A quick recall@5/OOD sanity check confirmed the lightweight reranker is not badly broken (Recall@5=0.9000, OOD Accuracy=0.8000), but a full RAGAS comparison between the two rerankers was not performed. | `src/config.py`, `src/retrieval/reranker.py` |
 
 ---
+
 
 ## Technical Risks — Live Tracker
 

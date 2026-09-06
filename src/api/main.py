@@ -8,6 +8,16 @@ API docs at /docs, and the dominant choice across 2026 AI-engineer project refer
 
 from __future__ import annotations
 
+import os
+
+# Limit thread allocations & force CPU for free tier hosting
+os.environ["FORCE_CPU_RERANKER"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 import logging
 from contextlib import asynccontextmanager
 
@@ -15,7 +25,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.routes import health, query
-from src.config import ENABLE_ADMIN
+from src.config import ENABLE_ADMIN, RERANKER_MODEL
 
 logger = logging.getLogger(__name__)
 
@@ -28,19 +38,18 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Starting RAG Knowledge Assistant API...")
 
-    # Limit PyTorch threads to save memory on 512MB instances
+    # Limit PyTorch threads & disable gradient tracking to save memory
     try:
         import torch
+
         torch.set_num_threads(1)
-        import os
-        os.environ["OMP_NUM_THREADS"] = "1"
-        os.environ["MKL_NUM_THREADS"] = "1"
+        torch.set_grad_enabled(False)
     except Exception:
         pass
 
     # Pre-load embedding model
     try:
-        from src.ingestion.embedder import get_embedding_model, get_collection
+        from src.ingestion.embedder import get_collection, get_embedding_model
 
         get_embedding_model()
         collection = get_collection()
@@ -61,9 +70,10 @@ async def lifespan(app: FastAPI):
         from src.retrieval.reranker import _get_reranker
 
         _get_reranker()
-        logger.info("BGE reranker model pre-loaded successfully")
+        logger.info("Reranker model (%s) pre-loaded successfully", RERANKER_MODEL)
     except Exception as exc:
         logger.warning("Could not pre-load reranker: %s", exc)
+
 
     yield
 
