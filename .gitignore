@@ -4,7 +4,6 @@
 # Data (large, not versioned — mount as volumes or download separately)
 data/raw/
 data/processed/
-data/chroma_db/
 
 # Evaluation result files (large JSON, local-only — see src/evaluation/results/ locally)
 src/evaluation/results/
