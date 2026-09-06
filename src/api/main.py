@@ -20,7 +20,9 @@ os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
+import asyncio
 import logging
+import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -31,18 +33,15 @@ from src.config import ENABLE_ADMIN, RERANKER_MODEL
 
 logger = logging.getLogger(__name__)
 
+# Startup must complete within this many seconds. A hang almost always means a
+# hidden network call (e.g. HF hub download, tiktoken fetch). Exits non-zero so
+# Render reports a fast, visible failure instead of a silent 5-minute timeout.
+_STARTUP_TIMEOUT_SECONDS = 45
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Startup: pre-load models and indexes so the first query isn't slow.
-    Shutdown: clean up resources.
-    """
-    logger.info("Starting RAG Knowledge Assistant API...")
 
-    # Limit PyTorch threads & disable gradient tracking to save memory if torch was imported
-    import sys
-
+async def _load_models() -> None:
+    """Pre-load all models and indexes. Runs inside the startup watchdog."""
+    # Limit PyTorch threads & disable gradient tracking if torch was already imported
     if "torch" in sys.modules:
         try:
             import torch
@@ -83,6 +82,30 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("Could not pre-load reranker: %s", exc)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Startup: pre-load models and indexes so the first query isn't slow.
+    Shutdown: clean up resources.
+
+    The watchdog (asyncio.wait_for) kills the process if startup exceeds
+    _STARTUP_TIMEOUT_SECONDS. That almost always means a hidden network call —
+    fix it rather than raising the timeout.
+    """
+    logger.info("Starting RAG Knowledge Assistant API...")
+    try:
+        await asyncio.wait_for(_load_models(), timeout=_STARTUP_TIMEOUT_SECONDS)
+        logger.info(
+            "Startup complete — all models loaded within %ds", _STARTUP_TIMEOUT_SECONDS
+        )
+    except asyncio.TimeoutError:
+        logger.critical(
+            "STARTUP TIMED OUT after %ds — likely a hidden network call or model download. "
+            "Check HF_HUB_OFFLINE, TRANSFORMERS_OFFLINE, and tiktoken cache.",
+            _STARTUP_TIMEOUT_SECONDS,
+        )
+        sys.exit(1)
 
     yield
 
