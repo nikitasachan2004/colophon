@@ -150,14 +150,24 @@ def rerank(
                 raw_scores = [raw_scores]
             scores = [float(s) for s in raw_scores]
         elif hasattr(reranker, "predict"):
-            # CrossEncoder API
-            raw_scores = reranker.predict(pairs)
+            # CrossEncoder API (batch_size=2 keeps memory footprint minimal under 512MB limit)
+            import ctypes
+            import gc
+
+            raw_scores = reranker.predict(pairs, batch_size=2)
             if hasattr(raw_scores, "tolist"):
                 raw_scores = raw_scores.tolist()
             if isinstance(raw_scores, (int, float)):
                 raw_scores = [raw_scores]
             # Map raw logits to [0, 1] via sigmoid if not already normalized
             scores = [_sigmoid(float(s)) for s in raw_scores]
+
+            # Return freed intermediate tensors to Linux kernel immediately
+            gc.collect()
+            try:
+                ctypes.CDLL("libc.so.6").malloc_trim(0)
+            except Exception:
+                pass
         else:
             raise ValueError(f"Unknown reranker model interface: {type(reranker)}")
     except Exception as exc:

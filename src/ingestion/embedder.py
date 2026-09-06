@@ -30,12 +30,34 @@ _model: SentenceTransformer | None = None
 _chroma_client: chromadb.ClientAPI | None = None
 
 
-def get_embedding_model() -> SentenceTransformer:
-    """Lazy-load the embedding model."""
+class ONNXEmbeddingWrapper:
+    """Lightweight ONNX wrapper for all-MiniLM-L6-v2 (~30MB RSS vs ~560MB PyTorch RSS)."""
+
+    def __init__(self):
+        import chromadb.utils.embedding_functions as ef
+
+        self._ef = ef.ONNXMiniLM_L6_V2()
+
+    def encode(self, sentences: list[str] | str, show_progress_bar: bool = False):
+        if isinstance(sentences, str):
+            sentences = [sentences]
+        embeddings = self._ef(sentences)
+        import numpy as np
+
+        return np.array(embeddings)
+
+
+def get_embedding_model() -> Any:
+    """Lazy-load the embedding model (ONNX runtime preferred for low memory footprint)."""
     global _model
     if _model is None:
         logger.info("Loading embedding model: %s", EMBEDDING_MODEL)
-        _model = SentenceTransformer(EMBEDDING_MODEL)
+        try:
+            _model = ONNXEmbeddingWrapper()
+            logger.info("Loaded ONNX embedding model (low-RAM runtime)")
+        except Exception as exc:
+            logger.warning("Could not load ONNX embedding model (%s), falling back to PyTorch: %s", EMBEDDING_MODEL, exc)
+            _model = SentenceTransformer(EMBEDDING_MODEL)
     return _model
 
 

@@ -7,8 +7,7 @@
 venv/
 env/
 
-# Data — mounted as volumes at runtime, not baked into image
-data/chroma_db/
+# Data — raw and processed unneeded in container; chroma_db is baked in
 data/raw/
 data/processed/
 
