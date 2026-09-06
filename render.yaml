@@ -1,13 +1,20 @@
 services:
   - type: web
     name: colophon-api
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
+    env: docker
+    dockerfilePath: ./docker/Dockerfile.api
+    # Free tier: 512 MB RAM ceiling — image tuned to stay under 400 MB RSS
+    plan: free
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: LLM_BACKEND
         value: groq
       - key: GROQ_API_KEY
         sync: false
+      # Belt-and-suspenders: these are already in Dockerfile ENV but repeated here
+      # so Render's env layer cannot accidentally override them at runtime
+      - key: HF_HUB_OFFLINE
+        value: "1"
+      - key: TRANSFORMERS_OFFLINE
+        value: "1"
+      - key: FORCE_CPU_RERANKER
+        value: "1"
