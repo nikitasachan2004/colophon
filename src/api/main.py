@@ -40,21 +40,25 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Starting RAG Knowledge Assistant API...")
 
-    # Limit PyTorch threads & disable gradient tracking to save memory
-    try:
-        import torch
+    # Limit PyTorch threads & disable gradient tracking to save memory if torch was imported
+    import sys
 
-        torch.set_num_threads(1)
-        torch.set_num_interop_threads(1)
-        torch.set_grad_enabled(False)
-    except Exception:
-        pass
+    if "torch" in sys.modules:
+        try:
+            import torch
+
+            torch.set_num_threads(1)
+            torch.set_num_interop_threads(1)
+            torch.set_grad_enabled(False)
+        except Exception:
+            pass
 
     # Pre-load embedding model
     try:
         from src.ingestion.embedder import get_collection, get_embedding_model
 
-        get_embedding_model()
+        model = get_embedding_model()
+        model.encode(["warmup"])
         collection = get_collection()
         logger.info("ChromaDB loaded: %d chunks indexed", collection.count())
     except Exception as exc:
@@ -72,7 +76,9 @@ async def lifespan(app: FastAPI):
     try:
         from src.retrieval.reranker import _get_reranker
 
-        _get_reranker()
+        reranker = _get_reranker()
+        if hasattr(reranker, "predict"):
+            reranker.predict([["warmup", "warmup"]])
         logger.info("Reranker model (%s) pre-loaded successfully", RERANKER_MODEL)
     except Exception as exc:
         logger.warning("Could not pre-load reranker: %s", exc)

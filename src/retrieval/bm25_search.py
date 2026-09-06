@@ -31,13 +31,14 @@ _bm25_corpus_metadata: list[dict] = []
 
 
 def _tokenize(text: str) -> list[str]:
-    """Simple whitespace + punctuation tokenizer for BM25."""
+    """Simple whitespace + punctuation tokenizer for BM25 (interns tokens to save RAM)."""
     import re
+    import sys
 
     text = text.lower()
     # Keep alphanumeric, dots (for API names), underscores, hyphens
     tokens = re.findall(r"[a-z0-9_.]+(?:\.[a-z0-9_]+)*", text)
-    return tokens
+    return [sys.intern(t) for t in tokens]
 
 
 def build_bm25_index() -> BM25Okapi:
@@ -46,6 +47,7 @@ def build_bm25_index() -> BM25Okapi:
     Caches to disk for fast reloads.
     """
     global _bm25_index, _bm25_corpus_ids, _bm25_corpus_texts, _bm25_corpus_metadata
+    import gc
 
     collection = get_collection()
     total = collection.count()
@@ -73,6 +75,11 @@ def build_bm25_index() -> BM25Okapi:
     with open(BM25_INDEX_PATH, "wb") as f:
         pickle.dump(cache_data, f)
 
+    # Free raw text and metadata in memory to save ~60MB RAM (on-demand fetch used in bm25_search)
+    _bm25_corpus_texts = []
+    _bm25_corpus_metadata = []
+    gc.collect()
+
     logger.info("Built BM25 index over %d documents", total)
     return _bm25_index
 
@@ -80,6 +87,7 @@ def build_bm25_index() -> BM25Okapi:
 def _ensure_index_loaded() -> None:
     """Load BM25 index from cache or rebuild from ChromaDB."""
     global _bm25_index, _bm25_corpus_ids, _bm25_corpus_texts, _bm25_corpus_metadata
+    import gc
 
     if _bm25_index is not None:
         return
@@ -89,10 +97,11 @@ def _ensure_index_loaded() -> None:
         with open(BM25_INDEX_PATH, "rb") as f:
             cache_data = pickle.load(f)
         _bm25_corpus_ids = cache_data["ids"]
-        _bm25_corpus_texts = cache_data["texts"]
-        _bm25_corpus_metadata = cache_data["metadata"]
-        tokenized = [_tokenize(text) for text in _bm25_corpus_texts]
+        raw_texts = cache_data["texts"]
+        tokenized = [_tokenize(text) for text in raw_texts]
         _bm25_index = BM25Okapi(tokenized)
+        del raw_texts, cache_data
+        gc.collect()
         logger.info("BM25 index loaded: %d documents", len(_bm25_corpus_ids))
     else:
         build_bm25_index()
@@ -101,7 +110,7 @@ def _ensure_index_loaded() -> None:
 def bm25_search(query: str, top_k: int = 20) -> list[SearchResult]:
     """
     Sparse keyword search using BM25. Returns top-k results ranked by
-    keyword relevance score.
+    keyword relevance score, fetching matched chunk details from ChromaDB.
     """
     _ensure_index_loaded()
     assert _bm25_index is not None
@@ -114,16 +123,32 @@ def bm25_search(query: str, top_k: int = 20) -> list[SearchResult]:
         :top_k
     ]
 
-    results: list[SearchResult] = []
-    for idx in top_indices:
-        if scores[idx] <= 0:
-            continue  # Skip zero-score results
+    matched_indices = [idx for idx in top_indices if scores[idx] > 0]
+    if not matched_indices:
+        return []
 
-        metadata = _bm25_corpus_metadata[idx] if idx < len(_bm25_corpus_metadata) else {}
+    matched_ids = [_bm25_corpus_ids[idx] for idx in matched_indices]
+
+    # Fetch document text and metadata on demand from ChromaDB (~1.5ms)
+    collection = get_collection()
+    chroma_res = collection.get(ids=matched_ids, include=["documents", "metadatas"])
+    id_to_data = {}
+    if chroma_res["ids"]:
+        for c_id, doc, meta in zip(
+            chroma_res["ids"],
+            chroma_res["documents"] or [],
+            chroma_res["metadatas"] or [],
+        ):
+            id_to_data[c_id] = (doc, meta or {})
+
+    results: list[SearchResult] = []
+    for idx in matched_indices:
+        c_id = _bm25_corpus_ids[idx]
+        doc_text, metadata = id_to_data.get(c_id, ("", {}))
         results.append(
             SearchResult(
-                chunk_id=_bm25_corpus_ids[idx],
-                text=_bm25_corpus_texts[idx],
+                chunk_id=c_id,
+                text=doc_text,
                 score=float(scores[idx]),
                 source_url=metadata.get("source_url", ""),
                 section_heading=metadata.get("section_heading", ""),

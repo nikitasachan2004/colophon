@@ -16,7 +16,6 @@ from datetime import datetime, timezone
 from typing import Any
 
 import chromadb
-from sentence_transformers import SentenceTransformer
 
 from src.config import CHROMA_PERSIST_DIR, EMBEDDING_MODEL
 from src.ingestion.chunker import Chunk
@@ -34,9 +33,28 @@ class ONNXEmbeddingWrapper:
     """Lightweight ONNX wrapper for all-MiniLM-L6-v2 (~30MB RSS vs ~560MB PyTorch RSS)."""
 
     def __init__(self):
+        import os
         import chromadb.utils.embedding_functions as ef
+        import onnxruntime as ort
 
         self._ef = ef.ONNXMiniLM_L6_V2()
+        # Override SessionOptions & prefer INT8 quantized model for ~26MB RSS vs ~168MB FP32 RSS
+        quant_path = os.path.join(self._ef.DOWNLOAD_PATH, self._ef.EXTRACTED_FOLDER_NAME, "model_quantized.onnx")
+        model_path = quant_path if os.path.exists(quant_path) else os.path.join(self._ef.DOWNLOAD_PATH, self._ef.EXTRACTED_FOLDER_NAME, "model.onnx")
+        if not os.path.exists(model_path):
+            try:
+                import huggingface_hub as hf
+                model_path = hf.hf_hub_download(repo_id="xenova/all-MiniLM-L6-v2", filename="onnx/model_quantized.onnx")
+            except Exception:
+                pass
+        if os.path.exists(model_path):
+            so = ort.SessionOptions()
+            so.log_severity_level = 3
+            so.intra_op_num_threads = 1
+            so.inter_op_num_threads = 1
+            so.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+            so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+            self._ef.model = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"], sess_options=so)
 
     def encode(self, sentences: list[str] | str, show_progress_bar: bool = False):
         if isinstance(sentences, str):
@@ -45,6 +63,7 @@ class ONNXEmbeddingWrapper:
         import numpy as np
 
         return np.array(embeddings)
+
 
 
 def get_embedding_model() -> Any:
@@ -57,6 +76,8 @@ def get_embedding_model() -> Any:
             logger.info("Loaded ONNX embedding model (low-RAM runtime)")
         except Exception as exc:
             logger.warning("Could not load ONNX embedding model (%s), falling back to PyTorch: %s", EMBEDDING_MODEL, exc)
+            from sentence_transformers import SentenceTransformer
+
             _model = SentenceTransformer(EMBEDDING_MODEL)
     return _model
 

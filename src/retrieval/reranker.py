@@ -48,12 +48,82 @@ def _get_device() -> str:
     return "cpu"
 
 
+class ONNXCrossEncoder:
+    """Lightweight ONNX wrapper for cross-encoder/ms-marco-MiniLM-L-6-v2 (~25MB RSS vs ~300MB PyTorch RSS)."""
+
+    def __init__(self, model_name: str = RERANKER_MODEL):
+        import onnxruntime as ort
+        from tokenizers import Tokenizer
+        from huggingface_hub import hf_hub_download
+
+        self.model_name = model_name
+        logger.info("Loading ONNX reranker tokenizer: %s", model_name)
+        try:
+            tok_json = hf_hub_download(repo_id=model_name, filename="tokenizer.json")
+            self.tokenizer = Tokenizer.from_file(tok_json)
+        except Exception:
+            self.tokenizer = Tokenizer.from_pretrained(model_name)
+
+        self.tokenizer.enable_padding(direction="right", pad_id=0, pad_token="[PAD]")
+        self.tokenizer.enable_truncation(max_length=256)
+
+        # Single-threaded SessionOptions to prevent thread pool allocation overhead on 512MB RAM ceiling
+        opts = ort.SessionOptions()
+        opts.log_severity_level = 3
+        opts.intra_op_num_threads = 1
+        opts.inter_op_num_threads = 1
+        opts.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+
+        # Use pre-downloaded INT8 quantized ONNX model weights (~10MB Session RSS vs ~150MB FP32)
+        try:
+            onnx_path = hf_hub_download(repo_id="xenova/ms-marco-MiniLM-L-6-v2", filename="onnx/model_quantized.onnx")
+        except Exception:
+            onnx_path = hf_hub_download(repo_id="xenova/ms-marco-MiniLM-L-6-v2", filename="onnx/model.onnx")
+        logger.info("Initializing ONNX InferenceSession for reranker (%s)", onnx_path)
+        self.session = ort.InferenceSession(onnx_path, sess_options=opts, providers=["CPUExecutionProvider"])
+
+    def predict(self, pairs: list[list[str]], batch_size: int = 1) -> list[float]:
+        if not pairs:
+            return []
+        import numpy as np
+
+        all_logits: list[float] = []
+        for i in range(0, len(pairs), batch_size):
+            batch = pairs[i : i + batch_size]
+            encoded = self.tokenizer.encode_batch([[p[0], p[1]] for p in batch])
+            input_ids = np.array([e.ids for e in encoded], dtype=np.int64)
+            attention_mask = np.array([e.attention_mask for e in encoded], dtype=np.int64)
+            token_type_ids = np.array([e.type_ids for e in encoded], dtype=np.int64)
+
+            onnx_inputs = {
+                "input_ids": input_ids,
+                "attention_mask": attention_mask,
+                "token_type_ids": token_type_ids,
+            }
+            outputs = self.session.run(None, onnx_inputs)
+            logits = outputs[0]
+            if len(logits.shape) > 1 and logits.shape[1] == 1:
+                logits = logits.flatten()
+            all_logits.extend([float(l) for l in logits])
+        return all_logits
+
+
+
 def _get_reranker():
-    """Lazy-load the cross-encoder reranker model based on RERANKER_MODEL."""
+    """Lazy-load the cross-encoder reranker model (ONNX preferred for low RAM footprint)."""
     global _reranker
     if _reranker is None:
         model_name = RERANKER_MODEL
         logger.info("Loading reranker model: %s", model_name)
+
+        # Primary low-RAM path: ONNXCrossEncoder
+        try:
+            _reranker = ONNXCrossEncoder(model_name)
+            logger.info("ONNXCrossEncoder loaded successfully (%s)", model_name)
+            return _reranker
+        except Exception as exc:
+            logger.warning("Could not load ONNX reranker (%s), trying PyTorch CrossEncoder: %s", model_name, exc)
+
         device = _get_device()
 
         # If BGE model is specified and FlagEmbedding is available, try FlagReranker first
@@ -70,7 +140,7 @@ def _get_reranker():
             except Exception as exc:
                 logger.info("FlagReranker not used (%s), falling back to CrossEncoder", exc)
 
-        # Primary lightweight path: sentence-transformers CrossEncoder
+        # Fallback path: sentence-transformers CrossEncoder
         try:
             from sentence_transformers import CrossEncoder
 
@@ -150,11 +220,11 @@ def rerank(
                 raw_scores = [raw_scores]
             scores = [float(s) for s in raw_scores]
         elif hasattr(reranker, "predict"):
-            # CrossEncoder API (batch_size=2 keeps memory footprint minimal under 512MB limit)
+            # CrossEncoder API (batch_size=1 keeps memory footprint minimal under 512MB limit)
             import ctypes
             import gc
 
-            raw_scores = reranker.predict(pairs, batch_size=2)
+            raw_scores = reranker.predict(pairs, batch_size=1)
             if hasattr(raw_scores, "tolist"):
                 raw_scores = raw_scores.tolist()
             if isinstance(raw_scores, (int, float)):
