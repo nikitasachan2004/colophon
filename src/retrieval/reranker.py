@@ -58,11 +58,22 @@ class ONNXCrossEncoder:
 
         self.model_name = model_name
         logger.info("Loading ONNX reranker tokenizer: %s", model_name)
+        # local_files_only=True reads from the baked-in HF cache without touching the
+        # network even when HF_HUB_OFFLINE=1 (newer huggingface_hub raises OfflineModeIsEnabled
+        # on hf_hub_download without local_files_only, even for cached files).
         try:
-            tok_json = hf_hub_download(repo_id=model_name, filename="tokenizer.json")
+            tok_json = hf_hub_download(
+                repo_id="xenova/ms-marco-MiniLM-L-6-v2",
+                filename="tokenizer.json",
+                local_files_only=True,
+            )
             self.tokenizer = Tokenizer.from_file(tok_json)
         except Exception:
-            self.tokenizer = Tokenizer.from_pretrained(model_name)
+            # Should never reach here if Dockerfile pre-download ran correctly
+            raise RuntimeError(
+                "xenova/ms-marco-MiniLM-L-6-v2 tokenizer.json not found in local cache. "
+                "Was the Docker image built with the model pre-download step?"
+            )
 
         self.tokenizer.enable_padding(direction="right", pad_id=0, pad_token="[PAD]")
         self.tokenizer.enable_truncation(max_length=256)
@@ -74,11 +85,19 @@ class ONNXCrossEncoder:
         opts.inter_op_num_threads = 1
         opts.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
 
-        # Use pre-downloaded INT8 quantized ONNX model weights (~10MB Session RSS vs ~150MB FP32)
+        # Use pre-downloaded INT8 quantized ONNX model weights — local_files_only=True for same reason
         try:
-            onnx_path = hf_hub_download(repo_id="xenova/ms-marco-MiniLM-L-6-v2", filename="onnx/model_quantized.onnx")
+            onnx_path = hf_hub_download(
+                repo_id="xenova/ms-marco-MiniLM-L-6-v2",
+                filename="onnx/model_quantized.onnx",
+                local_files_only=True,
+            )
         except Exception:
-            onnx_path = hf_hub_download(repo_id="xenova/ms-marco-MiniLM-L-6-v2", filename="onnx/model.onnx")
+            onnx_path = hf_hub_download(
+                repo_id="xenova/ms-marco-MiniLM-L-6-v2",
+                filename="onnx/model.onnx",
+                local_files_only=True,
+            )
         logger.info("Initializing ONNX InferenceSession for reranker (%s)", onnx_path)
         self.session = ort.InferenceSession(onnx_path, sess_options=opts, providers=["CPUExecutionProvider"])
 

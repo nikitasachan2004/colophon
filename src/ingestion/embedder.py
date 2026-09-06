@@ -44,7 +44,11 @@ class ONNXEmbeddingWrapper:
         if not os.path.exists(model_path):
             try:
                 import huggingface_hub as hf
-                model_path = hf.hf_hub_download(repo_id="xenova/all-MiniLM-L6-v2", filename="onnx/model_quantized.onnx")
+                model_path = hf.hf_hub_download(
+                    repo_id="xenova/all-MiniLM-L6-v2",
+                    filename="onnx/model_quantized.onnx",
+                    local_files_only=True,
+                )
             except Exception:
                 pass
         if os.path.exists(model_path):
