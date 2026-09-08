@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PrismHero } from "@/components/ui/prism-hero";
 import { motion } from "motion/react";
+import { PROJECT_STATS } from "@/lib/data";
 
 export default function LandingPage() {
   return (
@@ -56,10 +57,10 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { label: "Chunks", value: "2,621", caption: "77 pages indexed" },
-              { label: "Faithfulness", value: "0.706", caption: "RAGAS score" },
-              { label: "Context", value: "0.861", caption: "Precision" },
-              { label: "Cost", value: "$0", caption: "Free tier" },
+              { label: "Chunks", value: PROJECT_STATS.chunksIndexed.toLocaleString(), caption: `${PROJECT_STATS.pagesIndexed} pages indexed` },
+              { label: "Faithfulness", value: PROJECT_STATS.faithfulness.toString(), caption: "RAGAS score" },
+              { label: "Context", value: PROJECT_STATS.contextPrecision.toString(), caption: "Precision" },
+              { label: "Cost", value: PROJECT_STATS.costToBuild, caption: "Free tier" },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}

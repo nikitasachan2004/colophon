@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { Database, Search, GitMerge, ListFilter, Play, Server, Layers, ShieldCheck } from "lucide-react";
+import { PROJECT_STATS } from "@/lib/data";
 
 export default function ArchitecturePage() {
   const containerVariants = {
@@ -62,7 +63,7 @@ export default function ArchitecturePage() {
                 { num: "01", title: "Scraper", desc: "Fetch enterprise docs" },
                 { num: "02", title: "Chunker", desc: "Split by headings, 12% overlap" },
                 { num: "03", title: "Embedder", desc: "all-MiniLM-L6-v2 vectors" },
-                { num: "04", title: "Vector DB", desc: "ChromaDB, 2,621 chunks" },
+                { num: "04", title: "Vector DB", desc: `ChromaDB, ${PROJECT_STATS.chunksIndexed.toLocaleString()} chunks` },
                 { num: "05", title: "BM25 Index", desc: "Keyword search fallback" },
               ].map((stage, i) => (
                 <motion.div key={stage.num} variants={itemVariants} className="glass-card p-6 relative group overflow-hidden">
