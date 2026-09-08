@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Colophon — Claude API Knowledge Assistant",
+  title: "Colophon",
   description:
-    "Grounded answers to Claude API questions — every claim cited to real documentation.",
+    "Grounded answers to enterprise questions — every claim cited to real documentation.",
 };
 
 export default function RootLayout({
