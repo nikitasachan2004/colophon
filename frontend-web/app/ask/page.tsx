@@ -39,6 +39,8 @@ export default function AskPage() {
     setError(null);
     setResponse(null);
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
     try {
       // Simulate retrieval stage
       setStage("retrieving");
@@ -47,13 +49,13 @@ export default function AskPage() {
       // Simulate generation stage
       setStage("generating");
 
-      const res = await fetch("http://localhost:8000/query", {
+      const res = await fetch(`${apiUrl}/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: question }),
+        body: JSON.stringify({ question }),
       });
 
-      if (!res.ok) throw new Error("API request failed");
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data: QueryResponse = await res.json();
       setResponse(data);
     } catch (err) {
@@ -173,7 +175,7 @@ export default function AskPage() {
                 {error}
               </p>
               <p className="font-text text-xs text-muted mt-2">
-                Make sure the backend server is running on http://localhost:8000
+                The backend may be starting up — please try again in a moment.
               </p>
             </motion.div>
           )}
