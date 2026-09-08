@@ -44,6 +44,9 @@ export default function RootLayout({
             <Link href="/ask" className="font-medium text-sm text-muted hover:text-ink transition-colors">
               Ask
             </Link>
+            <Link href="/evaluation" className="font-medium text-sm text-muted hover:text-ink transition-colors">
+              Evaluation
+            </Link>
             <Link href="/architecture" className="font-medium text-sm text-muted hover:text-ink transition-colors">
               Architecture
             </Link>

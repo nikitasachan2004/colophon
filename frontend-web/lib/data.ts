@@ -105,7 +105,7 @@ export const TECH_STACK = [
   { layer: "Backend", choice: "FastAPI + uvicorn", cost: "Free" },
   { layer: "Frontend", choice: "Next.js 16 (App Router) + Tailwind + shadcn", cost: "Free" },
   { layer: "Evaluation", choice: "RAGAS 0.3.9 + Ollama judge (llama3.1:8b)", cost: "Free" },
-  { layer: "Backend hosting", choice: "Hugging Face Spaces (Docker SDK, CPU Basic)", cost: "Free" },
+  { layer: "Backend hosting", choice: "Render (Docker, free tier)", cost: "Free" },
   { layer: "Frontend hosting", choice: "Vercel (free tier)", cost: "Free" },
   { layer: "CI", choice: "GitHub Actions", cost: "Free (public repo)" },
 ] as const;

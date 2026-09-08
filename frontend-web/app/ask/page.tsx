@@ -27,10 +27,10 @@ export default function AskPage() {
   const [stage, setStage] = React.useState<"idle" | "retrieving" | "generating">("idle");
 
   const exampleQuestions = [
-    "What is the recommended architecture for scalable applications?",
-    "How does the system handle concurrent processing?",
-    "What are the built-in security and safety features?",
-    "How do I implement custom tool usage?",
+    "What is extended thinking in Claude?",
+    "How do I use tool use with the Claude API?",
+    "What are the rate limits for Claude models?",
+    "How does prompt caching work and when should I use it?",
   ];
 
   const handleAsk = async (question: string) => {

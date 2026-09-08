@@ -2,13 +2,14 @@
 
 import { motion } from "motion/react";
 import { CheckCircle2, TrendingUp, Target, Shield } from "lucide-react";
+import { PROJECT_STATS } from "@/lib/data";
 
 export default function EvaluationPage() {
   const metrics = [
-    { label: "Recall@5", value: 0.950, unit: "chunks retrieved", icon: Target },
-    { label: "Faithfulness", value: 0.706, unit: "claims grounded", icon: CheckCircle2 },
-    { label: "Context Precision", value: 0.861, unit: "relevant in top-5", icon: TrendingUp },
-    { label: "OOD Refusal Accuracy", value: 0.980, unit: "out-of-domain", icon: Shield },
+    { label: "Recall@5", value: PROJECT_STATS.recallAtFive, unit: "chunks retrieved", icon: Target },
+    { label: "Faithfulness", value: PROJECT_STATS.faithfulness, unit: "claims grounded", icon: CheckCircle2 },
+    { label: "Context Precision", value: PROJECT_STATS.contextPrecision, unit: "relevant in top-5", icon: TrendingUp },
+    { label: "OOD Refusal Accuracy", value: PROJECT_STATS.oodAccuracy, unit: "out-of-domain", icon: Shield },
   ];
 
   const ablationStages = [
@@ -51,25 +52,25 @@ export default function EvaluationPage() {
       metric: "Recall@5",
       definition: "% of relevant chunks in top-5 retrieved candidates",
       ragas: true,
-      value: 0.950,
+      value: PROJECT_STATS.recallAtFive,
     },
     {
       metric: "Faithfulness",
       definition: "% of generated claims grounded in retrieved context",
       ragas: true,
-      value: 0.706,
+      value: PROJECT_STATS.faithfulness,
     },
     {
       metric: "Context Precision",
       definition: "% of retrieved chunks that are answer-relevant",
       ragas: true,
-      value: 0.861,
+      value: PROJECT_STATS.contextPrecision,
     },
     {
       metric: "OOD Accuracy",
       definition: "% of out-of-domain questions correctly refused",
       ragas: false,
-      value: 0.980,
+      value: PROJECT_STATS.oodAccuracy,
     },
   ];
 

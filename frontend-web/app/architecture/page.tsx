@@ -244,7 +244,7 @@ export default function ArchitecturePage() {
                 { category: "Generation", items: ["Groq API (prod)", "Ollama (dev)", "Fast inference"] },
                 { category: "Backend", items: ["FastAPI", "Python", "Async/await"] },
                 { category: "Frontend", items: ["Next.js 16", "React 19", "TypeScript"] },
-                { category: "Deployment", items: ["Vercel (UI)", "HF Spaces (API)", "Free tiers"] },
+                { category: "Deployment", items: ["Vercel (UI)", "Render (API)", "Free tiers"] },
               ].map((section) => (
                 <motion.div key={section.category} variants={itemVariants} className="glass-card p-6 hover:-translate-y-1 transition-transform">
                   <h3 className="font-display font-medium text-base mb-4 text-ink">
