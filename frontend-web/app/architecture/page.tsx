@@ -65,7 +65,7 @@ export default function ArchitecturePage() {
                 { num: "03", title: "Embedder", desc: "all-MiniLM-L6-v2 vectors" },
                 { num: "04", title: "Vector DB", desc: `ChromaDB, ${PROJECT_STATS.chunksIndexed.toLocaleString()} chunks` },
                 { num: "05", title: "BM25 Index", desc: "Keyword search fallback" },
-              ].map((stage, i) => (
+              ].map((stage) => (
                 <motion.div key={stage.num} variants={itemVariants} className="glass-card p-6 relative group overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="font-mono text-xs text-blue-400/80 mb-3 bg-blue-500/10 w-fit px-2 py-1 rounded-md">

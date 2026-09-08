@@ -132,7 +132,7 @@ export default function AskPage() {
               className="space-y-4"
             >
               <div className="grid sm:grid-cols-2 gap-4">
-                {exampleQuestions.map((q, i) => (
+                {exampleQuestions.map((q) => (
                   <button
                     key={q}
                     onClick={() => handleAsk(q)}
