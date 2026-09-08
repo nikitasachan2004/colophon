@@ -29,12 +29,7 @@ export default function RootLayout({
       <body className="bg-canvas text-ink min-h-screen flex flex-col">
         {/* Glassmorphic Navigation */}
         <nav className="fixed top-0 w-full z-50 flex items-center justify-between px-8 py-4 backdrop-blur-md bg-canvas/60 border-b border-hairline">
-          {/* MENU Label (Left) */}
-          <div className="font-mono text-xs uppercase tracking-widest text-muted">
-            MENU
-          </div>
-
-          {/* Wordmark - Center */}
+          {/* Wordmark - Left */}
           <Link href="/" className="text-xl font-display font-bold tracking-tight text-ink hover:text-white/80 transition-colors">
             Colophon
           </Link>

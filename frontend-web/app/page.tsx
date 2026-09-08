@@ -9,6 +9,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-canvas text-ink selection:bg-white/20">
       {/* Hero Section using PrismHero */}
       <PrismHero
+        topInset
         eyebrow="Generation → Retrieval → Grounding"
         headline="Grounded"
         description="A production retrieval-augmented generation system for enterprise documentation. Every answer grounded in real sources. No hallucinations."
