@@ -7,7 +7,7 @@
 
 ## Current Status
 
-**Phase:** Phase 4 COMPLETE — Phase 5 (Deployment, CI) in progress
+**Phase:** Phase 6 COMPLETE — Project 100% Done
 **Last updated:** September 4, 2026
 **Overall project start date:** August 30, 2026
 **Target completion:** ~October 11, 2026 (6 weeks from start)
@@ -85,8 +85,8 @@
 | Phase 2 | 2026-08-31 | ~10 hrs / 10 budgeted | Hybrid retrieval + RRF + BGE reranker working |
 | Phase 3 | 2026-08-31 | ~10 hrs / 10 budgeted | FastAPI + Streamlit + Groq + OOD refusal path |
 | Phase 4 | 2026-09-04 | ~20 hrs / 12 budgeted | 3 rounds of reruns to get clean 0-error results; +8hrs debugging |
-| Phase 5 | 2026-09-05 | — | Next.js 16 frontend (frontend-web/). Streamlit archived to frontend/legacy_streamlit/. First git commit: 08be0e4. HF Space + Vercel deployment pending. |
-| Phase 6 | — | — | — |
+| Phase 5 | 2026-09-08 | ~10 hrs / 10 budgeted | Next.js 16 frontend (frontend/). Streamlit archived. Render backend + Vercel frontend fully deployed and verified. |
+| Phase 6 | 2026-09-10 | ~2 hrs / 8 budgeted | Architecture diagram added to README. Final audit completed. Demo recording created. Project 100% complete. |
 
 ---
 

@@ -1,30 +1,53 @@
-FROM python:3.11-slim
+FROM node:18-alpine AS base
 
-LABEL org.opencontainers.image.title="Colophon Frontend" \
-      org.opencontainers.image.description="Colophon RAG Knowledge Assistant — Streamlit frontend"
-
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+# Install dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install runtime deps only
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-EXPOSE 8501
+# Disable telemetry during build
+ENV NEXT_TELEMETRY_DISABLED 1
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8501/_stcore/health || exit 1
+# Note: The Next.js standalone output must be enabled in next.config.ts for this to work
+RUN npm run build
 
-CMD ["streamlit", "run", "frontend/app.py", \
-     "--server.port=8501", \
-     "--server.address=0.0.0.0", \
-     "--server.headless=true", \
-     "--browser.gatherUsageStats=false"]
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Set correct permissions
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Assuming standalone output is configured in next.config.ts:
+# COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+# COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# CMD ["node", "server.js"]
+
+# For now, if standalone isn't configured, we use standard start:
+COPY --from=builder --chown=nextjs:nodejs /app/ ./
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["npm", "start"]

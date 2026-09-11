@@ -39,11 +39,11 @@ services:
 
   frontend:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.frontend
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
     container_name: colophon-frontend
     ports:
-      - "8501:8501"
+      - "3000:3000"
     environment:
       - API_HOST=http://api:8000
     depends_on:
