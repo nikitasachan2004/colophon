@@ -26,11 +26,20 @@ export function MermaidDiagram({ chart, className }: MermaidDiagramProps) {
       initialized = true;
     }
 
+    let isMounted = true;
     const id = `mermaid-${Math.random().toString(36).slice(2)}`;
     mermaid
       .render(id, chart)
-      .then(({ svg }) => setSvg(svg))
-      .catch((err) => setError(String(err)));
+      .then(({ svg }) => {
+        if (isMounted) setSvg(svg);
+      })
+      .catch((err) => {
+        if (isMounted) setError(String(err));
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [chart]);
 
   if (error) {

@@ -7,7 +7,6 @@ Validates:
 3. Deduplication of chunks appearing in both lists
 """
 
-import pytest
 from src.retrieval.fusion import reciprocal_rank_fusion
 from src.retrieval.vector_search import SearchResult
 

@@ -52,11 +52,11 @@ GEN_MODEL   = "openai/gpt-oss-120b"
 JUDGE_MODEL = "llama3.1:8b via ollama (local)"
 
 print(f"\n{'='*72}")
-print(f"  STAGE 4 RAGAS RE-RUN — Option B (RERANK_CANDIDATE_POOL=10)")
+print("  STAGE 4 RAGAS RE-RUN — Option B (RERANK_CANDIDATE_POOL=10)")
 print(f"{'='*72}")
 print(f"  Judge  : {JUDGE_MODEL}")
 print(f"  Gen LLM: {GEN_MODEL} (Groq)")
-print(f"  Pool   : RERANK_CANDIDATE_POOL=10 (Option B)")
+print("  Pool   : RERANK_CANDIDATE_POOL=10 (Option B)")
 print(f"{'='*72}\n")
 
 print("Running Stage 4 question generation...")

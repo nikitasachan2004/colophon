@@ -1,5 +1,5 @@
 """Stage 3 RAGAS scoring — runs only if generation file is clean."""
-import os, sys, json, warnings, glob
+import os, sys, json, warnings
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 os.environ["RAGAS_JUDGE_BACKEND"] = "ollama"
@@ -29,7 +29,7 @@ if errors > 0:
     print(f"ERROR: {errors} generation errors — cannot score RAGAS on corrupted data.")
     sys.exit(1)
 
-print(f"0 generation errors confirmed. Starting RAGAS (Ollama llama3.1:8b, max_workers=1)...")
+print("0 generation errors confirmed. Starting RAGAS (Ollama llama3.1:8b, max_workers=1)...")
 scores = compute_ragas_scores(results)
 
 print("\n--- STAGE 3 RAGAS SCORES ---")
@@ -51,7 +51,7 @@ for r in in_domain3:
     elif r2:
         diff_ids.append(r["id"])
 
-print(f"\n--- CONTEXT IDENTITY vs STAGE 2 ---")
+print("\n--- CONTEXT IDENTITY vs STAGE 2 ---")
 print(f"  {same_count}/{len(in_domain3)} in-domain questions: identical contexts to Stage 2")
 print(f"  {len(diff_ids)} questions with genuinely different contexts: {diff_ids}")
 

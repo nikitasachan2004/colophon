@@ -42,12 +42,7 @@ export default function AskPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
     try {
-      // Simulate retrieval stage
       setStage("retrieving");
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Simulate generation stage
-      setStage("generating");
 
       const res = await fetch(`${apiUrl}/query`, {
         method: "POST",
@@ -158,8 +153,7 @@ export default function AskPage() {
                 <div className="absolute inset-2 rounded-full border-r-2 border-b-2 border-purple-400 animate-spin direction-reverse" style={{ animationDirection: "reverse" }} />
               </div>
               <p className="font-mono text-xs uppercase tracking-widest text-muted animate-pulse">
-                {stage === "retrieving" && "Searching documentation..."}
-                {stage === "generating" && "Generating answer..."}
+                {stage === "retrieving" && "Searching documentation & generating answer..."}
               </p>
             </motion.div>
           )}

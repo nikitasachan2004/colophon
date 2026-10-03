@@ -6,7 +6,6 @@ Validates:
 2. /query endpoint request/response format
 """
 
-import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 

@@ -10,10 +10,8 @@ from __future__ import annotations
 import json
 import os
 import sys
-import time
 import warnings
 from datetime import datetime, timezone
-from pathlib import Path
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if PROJECT_ROOT not in sys.path:
@@ -47,7 +45,7 @@ GEN_MODEL   = "openai/gpt-oss-120b"
 JUDGE_MODEL = "llama3.1:8b via ollama (local)"
 
 print(f"\\n{'='*72}")
-print(f"  PHASE 4 FINAL RUNNER (STAGES 2, 3, 4 + RAGAS)")
+print("  PHASE 4 FINAL RUNNER (STAGES 2, 3, 4 + RAGAS)")
 print(f"{'='*72}")
 print(f"  Judge  : {JUDGE_MODEL}")
 print(f"  Gen LLM: {GEN_MODEL} (Groq, connection retry fixed)")

@@ -22,7 +22,6 @@ import os
 import time
 import warnings
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
 # Suppress noisy deprecation warnings from langchain ecosystem
@@ -42,7 +41,7 @@ os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 os.environ.setdefault("HF_DATASETS_OFFLINE", "1")
 
-from src.config import PROJECT_ROOT, CONFIDENCE_THRESHOLD, RERANK_FINAL_K
+from src.config import PROJECT_ROOT, CONFIDENCE_THRESHOLD
 from src.retrieval.bm25_search import bm25_search
 from src.retrieval.fusion import reciprocal_rank_fusion
 from src.retrieval.reranker import rerank
@@ -64,7 +63,6 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 # duration of a single run.
 
 import contextlib
-import importlib
 
 
 @contextlib.contextmanager
@@ -296,7 +294,6 @@ def compute_ragas_scores(
         scores = _aggregate_ragas_df(result)
 
         # Log any NaN cells (per-question failures) for visibility
-        import numpy as np
         df = result.to_pandas()
         for col in ["faithfulness", "answer_relevancy", "context_precision", "context_recall"]:
             if col in df.columns:
@@ -481,7 +478,7 @@ def run_eval(
     # This is the safeguard against silently repeating the last run's mistake
     # (two stages sharing the same index).
     print(f"\n{'='*65}")
-    print(f"  RUN CONFIG SUMMARY")
+    print("  RUN CONFIG SUMMARY")
     print(f"{'='*65}")
     print(f"  run_name     : {run_name}")
     print(f"  chunking     : {chunking}")

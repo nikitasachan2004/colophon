@@ -7,9 +7,7 @@ Stage 1 result: phase4_baseline_naive_chunks,_vector-only_20260902_204914.json
 """
 from __future__ import annotations
 
-import json, os, sys, time, warnings
-from datetime import datetime, timezone
-from pathlib import Path
+import os, sys, warnings
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if PROJECT_ROOT not in sys.path:
@@ -28,7 +26,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message=".*langchain_community.*")
 
 from dotenv import load_dotenv; load_dotenv()
-from src.evaluation.run_eval import run_eval, compute_ragas_scores, RESULTS_DIR
+from src.evaluation.run_eval import run_eval
 
 import src.config as _cfg
 import src.generation.groq_backend as _groq_be

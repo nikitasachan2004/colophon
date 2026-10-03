@@ -18,7 +18,6 @@ from __future__ import annotations
 import json
 import os
 import sys
-import time
 import warnings
 from datetime import datetime, timezone
 from pathlib import Path
@@ -57,15 +56,15 @@ GEN_MODEL   = "openai/gpt-oss-120b"
 JUDGE_MODEL = "llama3.1:8b via ollama (local)"
 
 print(f"\n{'='*72}")
-print(f"  PHASE 4 ABLATION — ALL FOUR STAGES WITH RAGAS")
+print("  PHASE 4 ABLATION — ALL FOUR STAGES WITH RAGAS")
 print(f"{'='*72}")
 print(f"  Judge  : {JUDGE_MODEL}  (local, zero quota, max_workers=1)")
 print(f"  Gen LLM: {GEN_MODEL}  (Groq production model, fresh TPD)")
-print(f"  RAGAS  : faithfulness, answer_relevancy, context_precision, context_recall")
-print(f"  Questions: 25 total (20 in-domain for RAGAS, 5 OOD for refusal accuracy)")
-print(f"  Quota math (RAGAS): ~80 Ollama calls × ~20s = ~27 min/stage  (no API quota)")
-print(f"  Quota math (gen)  : 20 in-domain + 5 OOD = 25 q × 4 stages = 100 gen calls")
-print(f"                      paced at 70s/question → stays under 8k TPM gpt-oss-120b")
+print("  RAGAS  : faithfulness, answer_relevancy, context_precision, context_recall")
+print("  Questions: 25 total (20 in-domain for RAGAS, 5 OOD for refusal accuracy)")
+print("  Quota math (RAGAS): ~80 Ollama calls × ~20s = ~27 min/stage  (no API quota)")
+print("  Quota math (gen)  : 20 in-domain + 5 OOD = 25 q × 4 stages = 100 gen calls")
+print("                      paced at 70s/question → stays under 8k TPM gpt-oss-120b")
 print(f"{'='*72}\n")
 
 # ── Stage definitions ─────────────────────────────────────────────────────

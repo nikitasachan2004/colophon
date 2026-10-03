@@ -1,8 +1,6 @@
 import os
 import sys
-import json
 import warnings
-from datetime import datetime
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if PROJECT_ROOT not in sys.path:
@@ -22,7 +20,7 @@ warnings.filterwarnings("ignore", message=".*langchain_community.*")
 from dotenv import load_dotenv
 load_dotenv()
 
-from src.evaluation.run_eval import run_eval, RESULTS_DIR
+from src.evaluation.run_eval import run_eval
 import src.config as _cfg
 import src.generation.groq_backend as _groq_be
 

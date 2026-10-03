@@ -226,7 +226,7 @@ def rerank(
     if reranker == "unavailable":
         logger.warning("Reranker unavailable, using pre-fusion scores")
         top = sorted(candidates, key=lambda r: r.score, reverse=True)[:final_k]
-        context_found = len(top) > 0 and top[0].score > 0
+        context_found = len(top) > 0 and top[0].score >= confidence_threshold
         return top, context_found
 
     pairs = [[query, c.text] for c in candidates]
@@ -262,7 +262,7 @@ def rerank(
     except Exception as exc:
         logger.error("Reranker scoring failed: %s — falling back", exc)
         top = sorted(candidates, key=lambda r: r.score, reverse=True)[:final_k]
-        context_found = len(top) > 0 and top[0].score > 0
+        context_found = len(top) > 0 and top[0].score >= confidence_threshold
         return top, context_found
 
     # Attach reranker scores to candidates

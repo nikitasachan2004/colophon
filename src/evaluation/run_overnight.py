@@ -11,7 +11,7 @@ Runs automatically after Stage 3 RAGAS finishes:
 
 Zero cost: Groq free tier for generation, Ollama for RAGAS.
 """
-import os, sys, json, time, random, subprocess, warnings, glob, re
+import os, sys, json, time, random, subprocess, warnings
 from pathlib import Path
 from datetime import datetime
 
@@ -262,7 +262,7 @@ readme_path = Path("README.md")
 readme = readme_path.read_text()
 
 ablation_md = "\n\n## Ablation Results\n\n"
-ablation_md += f"_All 4 stages verified clean (0 generation errors). Judge: llama3.1:8b (Ollama local). Gen: openai/gpt-oss-120b (Groq free tier)._\n\n"
+ablation_md += "_All 4 stages verified clean (0 generation errors). Judge: llama3.1:8b (Ollama local). Gen: openai/gpt-oss-120b (Groq free tier)._\n\n"
 ablation_md += "| Stage | Recall@5 | OOD Acc | Faithfulness | Ans Relevancy | Ctx Precision | Ctx Recall |\n"
 ablation_md += "|---|---|---|---|---|---|---|\n"
 for r in table_rows:
@@ -293,10 +293,10 @@ else:
 log("\n" + "="*60)
 log("PHASE 4 COMPLETE")
 log("="*60)
-log(f"  Stage 3 RAGAS: scored in overnight_run.log")
-log(f"  Stage 4 generation: 0 errors")
-log(f"  Stage 4 RAGAS: see scores above")
-log(f"  memory.md: updated")
-log(f"  README.md: updated")
+log("  Stage 3 RAGAS: scored in overnight_run.log")
+log("  Stage 4 generation: 0 errors")
+log("  Stage 4 RAGAS: see scores above")
+log("  memory.md: updated")
+log("  README.md: updated")
 log(f"  p50={p50}ms  p95={p95}ms")
 log("All results saved. Safe to review in the morning.")

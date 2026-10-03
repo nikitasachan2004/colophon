@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { CheckCircle2, TrendingUp, Target, Shield } from "lucide-react";
-import { PROJECT_STATS } from "@/lib/data";
+import { PROJECT_STATS, ABLATION_RESULTS } from "@/lib/data";
 
 export default function EvaluationPage() {
   const metrics = [
@@ -14,35 +14,35 @@ export default function EvaluationPage() {
 
   const ablationStages = [
     {
-      stage: "1. Retrieval Only",
-      desc: "Dense search without BM25 fusion",
+      stage: "1. Baseline (naive chunks)",
+      desc: "Fixed-size 512 tok, vector-only, no reranker",
       metrics: [
-        { name: "Recall@5", value: 0.720 },
-        { name: "Faithfulness", value: 0.450 },
+        { name: "Recall@5", value: ABLATION_RESULTS[0].recallAt5 },
+        { name: "Faithfulness", value: ABLATION_RESULTS[0].faithfulness },
       ],
     },
     {
-      stage: "2. + Hybrid (RRF)",
+      stage: "2. + Structure-Aware Chunking",
+      desc: "Heading-split, code-atomic, 12% overlap",
+      metrics: [
+        { name: "Recall@5", value: ABLATION_RESULTS[1].recallAt5 },
+        { name: "Faithfulness", value: ABLATION_RESULTS[1].faithfulness },
+      ],
+    },
+    {
+      stage: "3. + Hybrid (RRF)",
       desc: "Dense + BM25 with Reciprocal Rank Fusion",
       metrics: [
-        { name: "Recall@5", value: 0.880 },
-        { name: "Faithfulness", value: 0.580 },
+        { name: "Recall@5", value: ABLATION_RESULTS[2].recallAt5 },
+        { name: "Faithfulness", value: ABLATION_RESULTS[2].faithfulness },
       ],
     },
     {
-      stage: "3. + Reranking",
-      desc: "Add BGE cross-encoder reranking",
+      stage: "4. + Reranking (Production)",
+      desc: "Cross-encoder reranking + confidence threshold",
       metrics: [
-        { name: "Recall@5", value: 0.920 },
-        { name: "Faithfulness", value: 0.670 },
-      ],
-    },
-    {
-      stage: "4. + Confidence Filter",
-      desc: "Add threshold-based refusal (PRODUCTION)",
-      metrics: [
-        { name: "Recall@5", value: 0.950 },
-        { name: "Faithfulness", value: 0.706 },
+        { name: "Recall@5", value: ABLATION_RESULTS[3].recallAt5 },
+        { name: "Faithfulness", value: ABLATION_RESULTS[3].faithfulness },
       ],
     },
   ];

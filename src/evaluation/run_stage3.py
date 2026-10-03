@@ -37,7 +37,7 @@ ood = [r for r in results if r.get("category") == "out_of_domain"]
 ood_correct = [r for r in ood if r.get("refusal_correct")]
 
 print(f"\n{'='*60}")
-print(f"  STAGE 3 GENERATION COMPLETE")
+print("  STAGE 3 GENERATION COMPLETE")
 print(f"{'='*60}")
 print(f"  Total questions : {len(results)}")
 print(f"  Generation errors: {len(errors)}")

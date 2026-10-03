@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 COLLECTION_NAME = "claude_docs"
 
 # Module-level singletons (lazy-initialized)
-_model: SentenceTransformer | None = None
+_model: Any = None
 _chroma_client: chromadb.ClientAPI | None = None
 
 

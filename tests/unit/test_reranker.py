@@ -7,7 +7,6 @@ Validates:
 3. Top-k filtering
 """
 
-import pytest
 from src.retrieval.reranker import rerank
 from src.retrieval.vector_search import SearchResult
 

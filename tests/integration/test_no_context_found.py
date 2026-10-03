@@ -8,7 +8,6 @@ When retrieval returns zero or below-threshold confidence matches, the system:
 3. Omits invalid source citations
 """
 
-import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 

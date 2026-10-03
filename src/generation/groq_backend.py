@@ -60,4 +60,6 @@ def generate(
     except Exception as exc:
         raise RuntimeError(f"Groq API error: {exc}")
 
+    if not response.choices:
+        return ""
     return response.choices[0].message.content or ""

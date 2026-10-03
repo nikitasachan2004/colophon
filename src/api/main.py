@@ -123,14 +123,11 @@ app = FastAPI(
 # "*.vercel.app" covers preview deployments; the production domain should be
 # added to ALLOWED_ORIGINS in the environment once the Vercel project is named.
 # localhost:3000 covers Next.js dev server; localhost:8501 keeps Streamlit working locally.
-import os as _os
-
-_EXTRA = [o.strip() for o in _os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
+_EXTRA = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
 
 ALLOWED_ORIGINS = [
     "http://localhost:3000",        # Next.js dev
     "http://localhost:8501",        # Streamlit dev (legacy)
-    "https://*.vercel.app",         # Vercel preview & prod deployments
     *_EXTRA,                        # Any domain injected via ALLOWED_ORIGINS env var
 ]
 

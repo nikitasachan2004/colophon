@@ -7,13 +7,9 @@ Validates:
 3. Sub-splitting oversized sections with overlap
 """
 
-import pytest
 from src.ingestion.chunker import (
-    Chunk,
     _split_on_headings,
-    _recursive_split,
     chunk_document,
-    count_tokens,
 )
 
 

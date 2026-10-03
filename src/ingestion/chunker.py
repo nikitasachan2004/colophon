@@ -18,7 +18,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
-import tiktoken
 
 from src.config import CHUNK_OVERLAP_PCT, CHUNK_SIZE_TOKENS
 

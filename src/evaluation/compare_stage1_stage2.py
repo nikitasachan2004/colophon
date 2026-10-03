@@ -30,7 +30,7 @@ by_id2 = {r["id"]: r for r in in_domain2}
 shared_ids = sorted(set(by_id1) & set(by_id2))
 
 print(f"\n{'='*110}")
-print(f"  STEP 1: Per-question context IDENTITY check (first 80 chars per chunk)")
+print("  STEP 1: Per-question context IDENTITY check (first 80 chars per chunk)")
 print(f"{'='*110}")
 print(f"{'ID':<12} {'Contexts identical?':<22} {'Stage1 chunk1[:60]':<62} {'Stage2 chunk1[:60]'}")
 print(f"{'-'*110}")
@@ -49,7 +49,7 @@ for qid in shared_ids:
 print(f"\n  {identical_count}/{len(shared_ids)} in-domain questions have byte-for-byte identical contexts")
 
 print(f"\n\n{'='*110}")
-print(f"  STEP 2: Re-run RAGAS on Stage 1 and Stage 2 independently, capture per-row scores")
+print("  STEP 2: Re-run RAGAS on Stage 1 and Stage 2 independently, capture per-row scores")
 print(f"{'='*110}")
 
 MAX_CTX_CHARS = 300
@@ -61,7 +61,6 @@ def build_dataset_and_score(rows, label):
     from datasets import Dataset
     from ragas.llms import LangchainLLMWrapper
     from ragas.embeddings import LangchainEmbeddingsWrapper
-    import src.ingestion.embedder as emb_mod
     from langchain_community.embeddings import HuggingFaceEmbeddings
 
     print(f"\n  [{label}] Building dataset from {len(rows)} rows, id(rows)={id(rows)}")
@@ -74,7 +73,6 @@ def build_dataset_and_score(rows, label):
     print(f"  [{label}] dataset id={id(dataset)}, first question: {rows[0]['question'][:60]}")
 
     from langchain_ollama import ChatOllama
-    from langchain_community.embeddings import HuggingFaceEmbeddings
     llm_raw = ChatOllama(base_url="http://localhost:11434", model="llama3.1:8b", temperature=0)
     emb_raw = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     llm = LangchainLLMWrapper(langchain_llm=llm_raw)
@@ -98,7 +96,7 @@ df2 = build_dataset_and_score(in_domain2, "STAGE2")
 
 # Print side-by-side table
 print(f"\n\n{'='*110}")
-print(f"  STEP 3: Per-row comparison table — context_precision and context_recall")
+print("  STEP 3: Per-row comparison table — context_precision and context_recall")
 print(f"{'='*110}")
 print(f"{'ID':<12} {'S1_ctx_prec':>12} {'S2_ctx_prec':>12} {'Match_prec':>11} | {'S1_ctx_rec':>11} {'S2_ctx_rec':>11} {'Match_rec':>10}")
 print(f"{'-'*110}")

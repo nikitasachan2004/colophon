@@ -1,9 +1,9 @@
 # 🚀 Colophon — Production RAG Knowledge Assistant
 
-[![CI Pipeline](https://github.com/your-username/colophon/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/colophon/actions)
+[![CI Pipeline](https://github.com/nikitasachan2004/colophon/actions/workflows/ci.yml/badge.svg)](https://github.com/nikitasachan2004/colophon/actions)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.38+-FF4B4B.svg)](https://streamlit.io)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Welcome to **Colophon**, a blazing-fast, production-ready Retrieval-Augmented Generation (RAG) assistant designed specifically for the **Anthropic Claude API documentation** (`platform.claude.com/docs`). 
@@ -66,7 +66,7 @@ flowchart TD
         U --> V[results/\nphase4_*.json]
     end
 
-    R --> W[Streamlit UI\nport 8501]
+    R --> W[Next.js 16 UI\nport 3000]
 ```
 
 ---
@@ -89,8 +89,7 @@ colophon/
 │   ├── api/            # FastAPI app routing and schemas
 │   ├── evaluation/     # RAGAS eval harness and benchmarks
 │   └── config.py       # Centralized env-driven configuration
-├── frontend/           # Legacy Streamlit web interface
-├── frontend-web/       # 🌟 The gleaming new Next.js frontend!
+├── frontend/           # 🌟 The gleaming Next.js 16 frontend!
 ├── tests/              # Unit and integration tests guaranteeing perfection
 ├── docker/             # Containerization magic
 ├── requirements.txt    # Python dependencies
@@ -109,7 +108,7 @@ colophon/
 
 ### 📦 Installation
 ```bash
-git clone https://github.com/your-username/colophon.git
+git clone https://github.com/nikitasachan2004/colophon.git
 cd colophon
 
 # Setup the Python backend brain
@@ -118,7 +117,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Setup the beautiful Next.js frontend
-cd frontend-web && npm install && cd ..
+cd frontend && npm install && cd ..
 ```
 
 ### 🔐 Environment Configuration
@@ -141,7 +140,7 @@ OLLAMA_MODEL=llama3.1:8b      # Used if LLM_BACKEND=ollama
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 
 # Terminal 2 — Launch the Next.js frontend (http://localhost:3000)
-cd frontend-web
+cd frontend
 cp .env.local.example .env.local   # first time only
 npm install
 npm run dev
