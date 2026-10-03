@@ -89,7 +89,7 @@ colophon/
 │   ├── api/            # FastAPI app routing and schemas
 │   ├── evaluation/     # RAGAS eval harness and benchmarks
 │   └── config.py       # Centralized env-driven configuration
-├── frontend/           # 🌟 The gleaming Next.js 16 frontend!
+├── frontend-web/       # 🌟 The gleaming Next.js 16 frontend!
 ├── tests/              # Unit and integration tests guaranteeing perfection
 ├── docker/             # Containerization magic
 ├── requirements.txt    # Python dependencies
@@ -117,7 +117,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Setup the beautiful Next.js frontend
-cd frontend && npm install && cd ..
+cd frontend-web && npm install && cd ..
 ```
 
 ### 🔐 Environment Configuration
@@ -140,7 +140,7 @@ OLLAMA_MODEL=llama3.1:8b      # Used if LLM_BACKEND=ollama
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 
 # Terminal 2 — Launch the Next.js frontend (http://localhost:3000)
-cd frontend
+cd frontend-web
 cp .env.local.example .env.local   # first time only
 npm install
 npm run dev

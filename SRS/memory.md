@@ -85,7 +85,7 @@
 | Phase 2 | 2026-08-31 | ~10 hrs / 10 budgeted | Hybrid retrieval + RRF + BGE reranker working |
 | Phase 3 | 2026-08-31 | ~10 hrs / 10 budgeted | FastAPI + Streamlit + Groq + OOD refusal path |
 | Phase 4 | 2026-09-04 | ~20 hrs / 12 budgeted | 3 rounds of reruns to get clean 0-error results; +8hrs debugging |
-| Phase 5 | 2026-09-08 | ~10 hrs / 10 budgeted | Next.js 16 frontend (frontend/). Streamlit archived. Render backend + Vercel frontend fully deployed and verified. |
+| Phase 5 | 2026-09-08 | ~10 hrs / 10 budgeted | Next.js 16 frontend (frontend-web/). Streamlit archived. Render backend + Vercel frontend fully deployed and verified. |
 | Phase 6 | 2026-09-10 | ~2 hrs / 8 budgeted | Architecture diagram added to README. Final audit completed. Demo recording created. Project 100% complete. |
 
 ---

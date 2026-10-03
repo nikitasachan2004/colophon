@@ -39,7 +39,7 @@ services:
 
   frontend:
     build:
-      context: ../frontend
+      context: ../frontend-web
       dockerfile: ../docker/Dockerfile.frontend
     container_name: colophon-frontend
     ports:

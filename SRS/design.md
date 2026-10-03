@@ -35,7 +35,7 @@ rag-knowledge-assistant/
 │   │   ├── run_eval.py         # runs full pipeline, computes RAGAS
 │   │   └── results/            # timestamped results.json history
 │   └── config.py               # all env-driven config, single source of truth
-├── frontend/
+├── frontend-web/
 │   └── app.py                  # Streamlit UI
 ├── tests/
 │   ├── unit/
